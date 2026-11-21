@@ -10,7 +10,7 @@ struct LabStatus {
 int main() {
     const LabStatus status{};
     std::cout << "NATIONVK LAB: " << status.mode
-              << "\\nSIMULATION ONLY: " << std::boolalpha << status.simulationOnly
-              << "\\nNETWORK ACCESS: " << status.networkAccess << '\\n';
+              << "\nSIMULATION ONLY: " << std::boolalpha << status.simulationOnly
+              << "\nNETWORK ACCESS: " << status.networkAccess << '\n';
     return 0;
 }
