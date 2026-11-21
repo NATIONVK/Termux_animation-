@@ -10,5 +10,5 @@ type LabStatus struct {
 
 func main() {
     status := LabStatus{"RED_HACKER", true, false}
-    fmt.Printf("NATIONVK LAB: %+v\\n", status)
+    fmt.Printf("NATIONVK LAB: %+v\n", status)
 }
