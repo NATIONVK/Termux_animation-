@@ -130,6 +130,7 @@ def animate(kind):
             elif kind=="scanner": scanner_frame(w,h,t)
             elif kind=="glitch": glitch_frame(w,h)
             elif kind=="heart": heart_frame(w,h,t)
+            elif kind=="redhack": red_hacker_frame(w,h,t)
             else: pulse_frame(w,h,t)
             print(color("\n  CTRL+C TO RETURN TO MENU",51,False),flush=True)
             time.sleep(.075 if kind=="matrix" else .12)
