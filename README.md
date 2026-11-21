@@ -27,7 +27,8 @@ python -m http.server 8080
 Then open `http://127.0.0.1:8080` in Chrome. Use the mode buttons, Change Color, Pause/Resume and Fullscreen controls. Tap or move on the stage to interact with particles.
 
 ## Features
-- Matrix rain, radar sweep, connected particle field, glitch and perspective cyber grid\n- Blue Cyber Heart in terminal and fullscreen: pulsing 3D-style particle mesh, orbit rings, electric arcs, touch shockwave and particle burst/rebuild
+- Matrix rain, radar sweep, connected particle field, glitch and perspective cyber grid
+- Blue Cyber Heart in terminal and fullscreen: pulsing 3D-style particle mesh, orbit rings, electric arcs, touch shockwave and particle burst/rebuild
 - Responsive canvas rendering with capped device pixel ratio for mobile performance
 - Offline; no API keys, external libraries, analytics, or network calls
 - Terminal animation uses ANSI escape codes and Python standard library only
