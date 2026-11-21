@@ -9,7 +9,7 @@
 </head>
 <body><main class="app">
 <header class="top"><div><div class="brand">NATIONVK // CYBER LAB</div><div class="sub">ANIMATION SYSTEM · LOCAL MODE</div></div><div class="status">● SYSTEM ONLINE</div></header>
-<nav class="toolbar" id="modes"><button data-mode="matrix" class="active">MATRIX</button><button data-mode="radar">RADAR</button><button data-mode="particles">PARTICLES</button><button data-mode="glitch">GLITCH</button><button data-mode="grid">CYBER GRID</button><button id="pause">PAUSE</button><button id="fullscreen">FULLSCREEN</button></nav>
+<nav class="toolbar" id="modes"><button data-mode="matrix" class="active">MATRIX</button><button data-mode="radar">RADAR</button><button data-mode="particles">PARTICLES</button><button data-mode="glitch">GLITCH</button><button data-mode="grid">CYBER GRID</button><button data-mode="heart">♥ CYBER HEART</button><button id="pause">PAUSE</button><button id="fullscreen">FULLSCREEN</button></nav>
 <section class="stage" id="stage"><canvas id="screen" aria-label="Animated cyber visualisation"></canvas><div class="scanline"></div><div class="hud"><div class="hudrow"><div class="readout">NODE: <b>NVK-01</b><br>MODE: <span id="modeName">MATRIX RAIN</span></div><div class="readout">FPS: <b id="fps">60</b><br>STATUS: <b>ACTIVE</b></div></div><div class="hudrow"><div class="readout">NATIONVK<br>FIND YOUR OWN PATH</div><div class="readout" id="clock">LOCAL VISUAL ENGINE</div></div></div></section>
 <footer class="bottom"><span>NO API · NO TRACKING · OFFLINE VISUALS</span><span>TOUCH / TAP TO INTERACT</span><button id="color">CHANGE COLOR</button></footer>
 </main>
@@ -22,10 +22,68 @@ function bg(){ctx.fillStyle='rgba(2,8,14,.23)';ctx.fillRect(0,0,w,h)}
 function matrix(t){ctx.font='13px monospace';for(let i=0;i<drops.length;i++){const x=i*17,y=drops[i]*17;ctx.fillStyle=i%5===0?'#eaffff':colors().main;ctx.shadowColor=colors().main;ctx.shadowBlur=8;ctx.fillText(String.fromCharCode(0x30A0+Math.random()*96),x,y);ctx.shadowBlur=0;if(y>h&&Math.random()>.975)drops[i]=0;drops[i]+=.7+Math.random()*1.8}}
 function radar(t){const cx=w/2,cy=h/2,R=Math.min(w,h)*.39;ctx.save();ctx.translate(cx,cy);ctx.strokeStyle=colors().soft;ctx.lineWidth=1;for(let r=R/4;r<=R;r+=R/4){ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.stroke()}ctx.beginPath();ctx.moveTo(-R,0);ctx.lineTo(R,0);ctx.moveTo(0,-R);ctx.lineTo(0,R);ctx.stroke();const a=t*.0007;const g=ctx.createRadialGradient(0,0,0,0,0,R);g.addColorStop(0,colors().glow);g.addColorStop(1,'transparent');ctx.rotate(a);ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,-.45,0);ctx.closePath();ctx.fill();ctx.strokeStyle=colors().main;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(R,0);ctx.stroke();for(let i=0;i<7;i++){const aa=i*2.4+t*.00018,rr=R*(.2+(i%3)*.23);ctx.fillStyle=i%2?'#39ff9b':colors().main;ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=12;ctx.beginPath();ctx.arc(Math.cos(aa)*rr,Math.sin(aa)*rr,3,0,7);ctx.fill()}ctx.restore()}
 function particleMode(t){for(let i=0;i<particles.length;i++){const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.p+=.025;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;const x=p.x+(pointer.active?(pointer.x*w-p.x)*.006:0),y=p.y+(pointer.active?(pointer.y*h-p.y)*.006:0);ctx.fillStyle=colors().main;ctx.shadowColor=colors().main;ctx.shadowBlur=12;ctx.beginPath();ctx.arc(x,y,p.r+Math.sin(p.p)*.5,0,7);ctx.fill();ctx.shadowBlur=0;for(let j=i+1;j<particles.length;j++){const q=particles[j],dx=x-q.x,dy=y-q.y,dist=Math.hypot(dx,dy);if(dist<95){ctx.strokeStyle='hsla('+hue+',100%,65%,'+(1-dist/95)*.25+')';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(q.x,q.y);ctx.stroke()}}}}
+
+// Deterministic 3D-style blue particle heart with orbit, pulse, lightning and touch burst.
+let heartPoints=[],heartBurst=0,heartShock=null;
+function heartShape(){
+  heartPoints=[];
+  const count=Math.min(1250,Math.max(520,Math.floor(w*h/390)));
+  for(let i=0;i<count;i++){
+    const a=Math.random()*Math.PI*2, fill=Math.sqrt(Math.random());
+    const x=16*Math.pow(Math.sin(a),3), y=-(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a));
+    heartPoints.push({x:x*fill,y:y*fill,z:(Math.random()-.5)*10,seed:Math.random()*6.28,size:.65+Math.random()*1.65,phase:Math.random()*6.28});
+  }
+}
+function heartMode(t){
+  if(!heartPoints.length)heartShape();
+  const cx=w/2,cy=h*.51,scale=Math.min(w/39,h/39)*.83;
+  const beat=1+.055*Math.sin(t*.0045)+.025*Math.sin(t*.009);
+  const rot=t*.00042,cr=Math.cos(rot),sr=Math.sin(rot);
+  const explode=heartBurst>0?Math.min(1,heartBurst/38):0;
+  const projected=[];
+  for(const p of heartPoints){
+    const spread=1+explode*2.9;
+    const xx=p.x*spread, yy=p.y*spread, zz=p.z*spread;
+    const rx=xx*cr-zz*sr, rz=xx*sr+zz*cr;
+    const perspective=1/(1+rz*.012);
+    const drift=explode* Math.sin(p.phase+t*.003)*8;
+    projected.push({x:cx+rx*scale*beat*perspective+drift,y:cy+yy*scale*beat*perspective,z:rz,size:p.size*(1+perspective*.25)});
+  }
+  projected.sort((a,b)=>a.z-b.z);
+  // Fine connecting filaments create a holographic mesh.
+  for(let i=0;i<projected.length;i+=3){
+    const p=projected[i];
+    for(let j=i+1;j<Math.min(i+7,projected.length);j+=2){
+      const q=projected[j],d=Math.hypot(p.x-q.x,p.y-q.y);
+      if(d<18){ctx.strokeStyle='rgba(0,150,255,'+((1-d/18)*.18)+')';ctx.lineWidth=.55;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke()}
+    }
+  }
+  for(const p of projected){
+    const depth=Math.max(.25,Math.min(1.2,(p.z+9)/18));
+    ctx.fillStyle='rgba(55,190,255,'+(.48+depth*.45)+')';ctx.shadowColor='#008cff';ctx.shadowBlur=5+depth*12;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.size*depth,0,Math.PI*2);ctx.fill();
+  }
+  ctx.shadowBlur=0;
+  // Two orbital rings.
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(-rot*1.8);
+  for(let k=0;k<2;k++){ctx.strokeStyle=k?'rgba(0,130,255,.22)':'rgba(0,225,255,.38)';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(0,0,scale*(19+k*3),scale*(5+k*1.5),k*.6,0,Math.PI*2);ctx.stroke()}
+  for(let i=0;i<4;i++){const a=t*.0015+i*Math.PI/2;const ox=Math.cos(a)*scale*21,oy=Math.sin(a)*scale*5;ctx.fillStyle='#b8f7ff';ctx.shadowColor='#00bfff';ctx.shadowBlur=15;ctx.beginPath();ctx.arc(ox,oy,2.2,0,7);ctx.fill()}
+  ctx.restore();ctx.shadowBlur=0;
+  // Electric arcs flicker around the heart perimeter.
+  if(Math.random()<.42){
+    const side=Math.random()<.5?-1:1, y0=cy+(Math.random()-.5)*scale*24;
+    let x0=cx+side*scale*15;ctx.beginPath();ctx.moveTo(x0,y0);
+    for(let k=0;k<7;k++){x0+=side*(Math.random()*scale*.9);y0+=(Math.random()-.5)*scale*2.2;ctx.lineTo(x0,y0)}
+    ctx.strokeStyle='rgba(95,220,255,.9)';ctx.lineWidth=1.2;ctx.shadowColor='#00aaff';ctx.shadowBlur=14;ctx.stroke();ctx.shadowBlur=0;
+  }
+  if(heartShock){const age=(t-heartShock.t)/620;if(age<1){ctx.strokeStyle='rgba(0,205,255,'+(1-age)+')';ctx.lineWidth=2;ctx.beginPath();ctx.arc(heartShock.x,heartShock.y,age*Math.min(w,h)*.48,0,7);ctx.stroke()}else heartShock=null}
+  if(heartBurst>0)heartBurst=Math.max(0,heartBurst-.65);
+  ctx.textAlign='center';ctx.font='11px monospace';ctx.fillStyle='rgba(110,210,255,.75)';ctx.fillText('NVK // HEART CORE',cx,h*.91);ctx.textAlign='start';
+}
 function glitch(t){matrix(t);for(let i=0;i<5;i++){if(Math.random()>.78){const y=Math.random()*h,hh=2+Math.random()*22;ctx.fillStyle=i%2?'#ff2bd644':colors().soft;ctx.fillRect(Math.random()*w,y,w*(.15+Math.random()*.8),hh)}}ctx.strokeStyle=colors().soft;for(let y=0;y<h;y+=5){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}}
 function grid(t){const horizon=h*.48,spacing=36;ctx.strokeStyle=colors().soft;ctx.lineWidth=1;for(let x=-w;x<w*2;x+=spacing){ctx.beginPath();ctx.moveTo(w/2+(x-w/2)*.08,horizon);ctx.lineTo(x,h);ctx.stroke()}for(let i=0;i<18;i++){const p=((i/18+t*.00012)%1),y=horizon+(p*p)*(h-horizon);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}ctx.strokeStyle=colors().main;ctx.beginPath();ctx.moveTo(0,horizon);ctx.lineTo(w,horizon);ctx.stroke();for(let i=0;i<18;i++){const x=(i*137+t*.025)%w;ctx.fillStyle=colors().main;ctx.fillRect(x,horizon-2,2,2)}}
-function draw(t){if(paused)return;bg();if(mode==='matrix')matrix(t);else if(mode==='radar')radar(t);else if(mode==='particles')particleMode(t);else if(mode==='glitch')glitch(t);else grid(t);frame++;if(t-last>1000){fps=Math.round(frame*1000/(t-last));document.getElementById('fps').textContent=fps;frame=0;last=t}document.getElementById('clock').textContent=new Date().toLocaleTimeString();raf=requestAnimationFrame(draw)}
-function setMode(m){mode=m;document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));document.getElementById('modeName').textContent=m.toUpperCase();init()}
-document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));document.getElementById('pause').onclick=e=>{paused=!paused;e.target.textContent=paused?'RESUME':'PAUSE';if(!paused){last=performance.now();raf=requestAnimationFrame(draw)}};document.getElementById('fullscreen').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){document.getElementById('modeName').textContent='FULLSCREEN UNAVAILABLE'}};document.getElementById('color').onclick=()=>{hue=(hue+53)%360;init()};stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();pointer.x=(e.clientX-r.left)/r.width;pointer.y=(e.clientY-r.top)/r.height;pointer.active=true});stage.addEventListener('pointerleave',()=>pointer.active=false);window.addEventListener('resize',resize);document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf)}else if(!paused){last=performance.now();raf=requestAnimationFrame(draw)}});resize();raf=requestAnimationFrame(draw);
+function draw(t){if(paused)return;bg();if(mode==='matrix')matrix(t);else if(mode==='radar')radar(t);else if(mode==='particles')particleMode(t);else if(mode==='glitch')glitch(t);else if(mode==='heart')heartMode(t);else grid(t);frame++;if(t-last>1000){fps=Math.round(frame*1000/(t-last));document.getElementById('fps').textContent=fps;frame=0;last=t}document.getElementById('clock').textContent=new Date().toLocaleTimeString();raf=requestAnimationFrame(draw)}
+function setMode(m){mode=m;if(m==='heart')heartShape();document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));document.getElementById('modeName').textContent=m.toUpperCase();init()}
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));document.getElementById('pause').onclick=e=>{paused=!paused;e.target.textContent=paused?'RESUME':'PAUSE';if(!paused){last=performance.now();raf=requestAnimationFrame(draw)}};document.getElementById('fullscreen').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){document.getElementById('modeName').textContent='FULLSCREEN UNAVAILABLE'}};document.getElementById('color').onclick=()=>{hue=(hue+53)%360;init()};stage.addEventListener('pointerdown',e=>{if(mode==='heart'){const r=stage.getBoundingClientRect();heartBurst=38;heartShock={x:e.clientX-r.left,y:e.clientY-r.top,t:performance.now()}}});stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();pointer.x=(e.clientX-r.left)/r.width;pointer.y=(e.clientY-r.top)/r.height;pointer.active=true});stage.addEventListener('pointerleave',()=>pointer.active=false);window.addEventListener('resize',resize);document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf)}else if(!paused){last=performance.now();raf=requestAnimationFrame(draw)}});resize();raf=requestAnimationFrame(draw);
 })();
 </script></body></html>
