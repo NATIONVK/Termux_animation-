@@ -9,7 +9,7 @@
 </head>
 <body><main class="app">
 <header class="top"><div><div class="brand">NATIONVK // CYBER LAB</div><div class="sub">ANIMATION SYSTEM · LOCAL MODE</div></div><div class="status">● SYSTEM ONLINE</div></header>
-<nav class="toolbar" id="modes"><button data-mode="matrix" class="active">MATRIX</button><button data-mode="radar">RADAR</button><button data-mode="particles">PARTICLES</button><button data-mode="glitch">GLITCH</button><button data-mode="grid">CYBER GRID</button><button data-mode="heart">♥ CYBER HEART</button><button id="pause">PAUSE</button><button id="fullscreen">FULLSCREEN</button></nav>
+<nav class="toolbar" id="modes"><button data-mode="matrix" class="active">MATRIX</button><button data-mode="radar">RADAR</button><button data-mode="particles">PARTICLES</button><button data-mode="glitch">GLITCH</button><button data-mode="grid">CYBER GRID</button><button data-mode="heart">♥ CYBER HEART</button><button data-mode="redhack">RED HACKER</button><button id="pause">PAUSE</button><button id="fullscreen">FULLSCREEN</button></nav>
 <section class="stage" id="stage"><canvas id="screen" aria-label="Animated cyber visualisation"></canvas><div class="scanline"></div><div class="hud"><div class="hudrow"><div class="readout">NODE: <b>NVK-01</b><br>MODE: <span id="modeName">MATRIX RAIN</span></div><div class="readout">FPS: <b id="fps">60</b><br>STATUS: <b>ACTIVE</b></div></div><div class="hudrow"><div class="readout">NATIONVK<br>FIND YOUR OWN PATH</div><div class="readout" id="clock">LOCAL VISUAL ENGINE</div></div></div></section>
 <footer class="bottom"><span>NO API · NO TRACKING · OFFLINE VISUALS</span><span>TOUCH / TAP TO INTERACT</span><button id="color">CHANGE COLOR</button></footer>
 </main>
@@ -80,10 +80,35 @@ function heartMode(t){
   if(heartBurst>0)heartBurst=Math.max(0,heartBurst-.65);
   ctx.textAlign='center';ctx.font='11px monospace';ctx.fillStyle='rgba(110,210,255,.75)';ctx.fillText('NVK // HEART CORE',cx,h*.91);ctx.textAlign='start';
 }
+function redHacker(t){
+  // Dark red hacker terminal: falling glyphs, threat scan, diagnostics and glitch bursts.
+  ctx.fillStyle='rgba(9,0,3,.32)';ctx.fillRect(0,0,w,h);
+  const red=['#ff173d','#ff3158','#b00028','#ff6b80'];
+  ctx.font='13px ui-monospace,monospace';
+  for(let i=0;i<drops.length;i++){
+    const x=i*17,y=drops[i]*17;
+    ctx.fillStyle=i%6===0?'#ffe4e9':red[i%red.length];ctx.shadowColor='#ff003c';ctx.shadowBlur=9;
+    ctx.fillText(String.fromCharCode(33+Math.random()*90|0),x,y);ctx.shadowBlur=0;
+    if(y>h&&Math.random()>.965)drops[i]=0;drops[i]+=.9+Math.random()*2.2;
+  }
+  // Scanning brackets and rotating threat radar.
+  const cx=w*.5,cy=h*.51,R=Math.min(w,h)*.34,angle=t*.0011;
+  ctx.save();ctx.translate(cx,cy);ctx.strokeStyle='rgba(255,25,65,.35)';ctx.lineWidth=1;
+  for(let k=1;k<=3;k++){ctx.beginPath();ctx.arc(0,0,R*k/3,0,Math.PI*2);ctx.stroke()}
+  ctx.rotate(angle);ctx.fillStyle='rgba(255,0,50,.14)';ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,-.22,.22);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#ff3158';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(R,0);ctx.stroke();ctx.restore();
+  if(Math.random()<.13){const y=Math.random()*h;ctx.fillStyle='rgba(255,0,55,.25)';ctx.fillRect(0,y,w,2+Math.random()*14)}
+  // Terminal diagnostics overlay.
+  ctx.fillStyle='rgba(255,48,82,.88)';ctx.font='bold 11px ui-monospace,monospace';
+  ctx.fillText('ROOT ACCESS // SIMULATION ONLY',16,h-54);
+  ctx.fillText('TRACE ROUTE: MASKED  |  FIREWALL: ACTIVE',16,h-36);
+  ctx.fillText('NATIONVK :: RED TEAM VISUALIZER',16,h-18);
+  ctx.strokeStyle='rgba(255,20,60,.24)';ctx.strokeRect(10,10,w-20,h-20);
+}
 function glitch(t){matrix(t);for(let i=0;i<5;i++){if(Math.random()>.78){const y=Math.random()*h,hh=2+Math.random()*22;ctx.fillStyle=i%2?'#ff2bd644':colors().soft;ctx.fillRect(Math.random()*w,y,w*(.15+Math.random()*.8),hh)}}ctx.strokeStyle=colors().soft;for(let y=0;y<h;y+=5){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}}
 function grid(t){const horizon=h*.48,spacing=36;ctx.strokeStyle=colors().soft;ctx.lineWidth=1;for(let x=-w;x<w*2;x+=spacing){ctx.beginPath();ctx.moveTo(w/2+(x-w/2)*.08,horizon);ctx.lineTo(x,h);ctx.stroke()}for(let i=0;i<18;i++){const p=((i/18+t*.00012)%1),y=horizon+(p*p)*(h-horizon);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}ctx.strokeStyle=colors().main;ctx.beginPath();ctx.moveTo(0,horizon);ctx.lineTo(w,horizon);ctx.stroke();for(let i=0;i<18;i++){const x=(i*137+t*.025)%w;ctx.fillStyle=colors().main;ctx.fillRect(x,horizon-2,2,2)}}
-function draw(t){if(paused)return;bg();if(mode==='matrix')matrix(t);else if(mode==='radar')radar(t);else if(mode==='particles')particleMode(t);else if(mode==='glitch')glitch(t);else if(mode==='heart')heartMode(t);else grid(t);frame++;if(t-last>1000){fps=Math.round(frame*1000/(t-last));document.getElementById('fps').textContent=fps;frame=0;last=t}document.getElementById('clock').textContent=new Date().toLocaleTimeString();raf=requestAnimationFrame(draw)}
-function setMode(m){mode=m;if(m==='heart')heartShape();document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));document.getElementById('modeName').textContent=m.toUpperCase();init()}
+function draw(t){if(paused)return;bg();if(mode==='matrix')matrix(t);else if(mode==='radar')radar(t);else if(mode==='particles')particleMode(t);else if(mode==='glitch')glitch(t);else if(mode==='heart')heartMode(t);else if(mode==='redhack')redHacker(t);else grid(t);frame++;if(t-last>1000){fps=Math.round(frame*1000/(t-last));document.getElementById('fps').textContent=fps;frame=0;last=t}document.getElementById('clock').textContent=new Date().toLocaleTimeString();raf=requestAnimationFrame(draw)}
+function setMode(m){mode=m;if(m==='heart')heartShape();if(m==='redhack'){hue=350;init();}document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));document.getElementById('modeName').textContent=m.toUpperCase();init()}
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));document.getElementById('pause').onclick=e=>{paused=!paused;e.target.textContent=paused?'RESUME':'PAUSE';if(!paused){last=performance.now();raf=requestAnimationFrame(draw)}};document.getElementById('fullscreen').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){document.getElementById('modeName').textContent='FULLSCREEN UNAVAILABLE'}};document.getElementById('color').onclick=()=>{hue=(hue+53)%360;init()};stage.addEventListener('pointerdown',e=>{if(mode==='heart'){const r=stage.getBoundingClientRect();heartBurst=38;heartShock={x:e.clientX-r.left,y:e.clientY-r.top,t:performance.now()}}});stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();pointer.x=(e.clientX-r.left)/r.width;pointer.y=(e.clientY-r.top)/r.height;pointer.active=true});stage.addEventListener('pointerleave',()=>pointer.active=false);window.addEventListener('resize',resize);document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf)}else if(!paused){last=performance.now();raf=requestAnimationFrame(draw)}});resize();raf=requestAnimationFrame(draw);
 })();
 </script></body></html>
