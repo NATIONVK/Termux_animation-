@@ -106,6 +106,7 @@ def animate(kind):
             if kind=="matrix": matrix_frame(w,h,w)
             elif kind=="scanner": scanner_frame(w,h,t)
             elif kind=="glitch": glitch_frame(w,h)
+            elif kind=="heart": heart_frame(w,h,t)
             else: pulse_frame(w,h,t)
             print(color("\n  CTRL+C TO RETURN TO MENU",51,False),flush=True)
             time.sleep(.075 if kind=="matrix" else .12)
@@ -122,6 +123,7 @@ def menu():
         options=[("1","Matrix Rain","matrix"),("2","Cyber Perimeter Scanner","scanner"),("3","Digital Glitch","glitch"),("4","Cyber Core Pulse","pulse")]
         for n,label,_ in options: print("  "+color("["+n+"]",51)+"  "+label)
         print("\n  "+color("[5]",51)+"  Random demo")
+        print("  "+color("[6]",51)+"  Blue Cyber Heart")
         print("  "+color("[0]",201)+"  Exit")
         try: choice=input("\n  NATIONVK@TERMUX > ").strip()
         except (EOFError,KeyboardInterrupt): break
