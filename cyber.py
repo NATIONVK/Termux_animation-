@@ -93,6 +93,29 @@ def heart_frame(w,h,t):
     print(color("  ⚡ HEARTBEAT: "+str(int(72+12*math.sin(t*4)))+" BPM  //  CORE: ONLINE",51))
     print(color("  TOUCH EFFECT: PARTICLE BURST SIMULATED IN TERMINAL",39,False))
 
+def red_hacker_frame(w,h,t):
+    """Dark red hacker terminal simulation with falling code and threat scan."""
+    width=max(24,w-4); rows=max(5,h-10)
+    print(color("  [ RED TEAM VISUALIZER // SIMULATION ONLY ]",196,True))
+    print(color("  ROOT ACCESS: SIMULATED   FIREWALL: ACTIVE   TRACE: MASKED",160))
+    chars="01#$%&<>[]{}/*+-=abcdef"
+    sweep=int((math.sin(t*1.5)+1)*.5*(width-1))
+    for y in range(rows):
+        line=[]
+        for x in range(width):
+            if random.random()<.095:
+                code=random.choice([160,196,124,203])
+                ch=random.choice(chars)
+                if abs(x-sweep)<2: code=203
+                line.append(color(ch,code,True))
+            else:
+                line.append(" ")
+        if y==rows//2:
+            line[sweep]="◆"
+        print("  "+"".join(line))
+    print(color("  >> INTRUSION DETECTION: ENABLED  //  NODE NVK-01",196,True))
+    print(color("  >> SYSTEM LOG: "+random.choice(["PACKET FILTERED","PORT SCAN SIMULATED","TRACE ROUTE MASKED","ACCESS GATE LOCKED"]),160))
+
 def animate(kind):
     global running
     w,h=size(); os.system("clear")
@@ -130,7 +153,7 @@ def menu():
         if choice=="0": break
         selected=next((k for n,_,k in options if n==choice),None)
         if choice=="5": selected=random.choice(["matrix","scanner","glitch","pulse","heart"])
-        if choice=="6": selected="heart"
+        if choice=="6": selected="heart"\n        if choice=="7": selected="redhack"
         if selected: animate(selected)
         else: print(color("  Unknown option.",201)); time.sleep(.7)
     print(RESET+SHOW+"  NATIONVK CYBER LAB — SESSION CLOSED")
