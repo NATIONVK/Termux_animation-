@@ -1,6 +1,6 @@
 # NATIONVK — Termux Cyber Animation Studio
 
-Offline cyber-themed animations for Android / Termux, with a separate fullscreen browser visualizer.
+Offline cyber-themed animations for Android / Termux, with a separate fullscreen browser visualizer and a 16-technology starter architecture.
 
 ## 1) Terminal mode (Termux)
 Requirements: Python 3 (no pip packages).
@@ -26,7 +26,7 @@ python -m http.server 8080
 
 Then open `http://127.0.0.1:8080` in Chrome. Use the mode buttons, Change Color, Pause/Resume and Fullscreen controls. Tap or move on the stage to interact with particles.
 
-## Features
+## Multi-language architecture\n\nThe `modules/` folder now contains starter/reference modules for Python, JavaScript, TypeScript, HTML5, CSS3, Java, Kotlin, C, C++, Rust, Go, PHP, SQL, Bash, Lua, and Dart. These are architecture scaffolds; the current runnable visualizer remains HTML/CSS/JavaScript plus the Python Termux program. See [`modules/README.md`](modules/README.md) for module responsibilities, integration status, and safe-use boundaries.\n\n## Features
 - Matrix rain, radar sweep, connected particle field, glitch and perspective cyber grid
 - Blue Cyber Heart in terminal and fullscreen: pulsing 3D-style particle mesh, orbit rings, electric arcs, touch shockwave and particle burst/rebuild
 - Dark Red Hacker mode: crimson matrix rain, threat radar sweep, scanline glitches and simulated terminal diagnostics
