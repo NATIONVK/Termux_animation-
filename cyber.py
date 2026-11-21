@@ -129,7 +129,8 @@ def menu():
         except (EOFError,KeyboardInterrupt): break
         if choice=="0": break
         selected=next((k for n,_,k in options if n==choice),None)
-        if choice=="5": selected=random.choice(["matrix","scanner","glitch","pulse","heart"])\n        if choice=="6": selected="heart"
+        if choice=="5": selected=random.choice(["matrix","scanner","glitch","pulse","heart"])
+        if choice=="6": selected="heart"
         if selected: animate(selected)
         else: print(color("  Unknown option.",201)); time.sleep(.7)
     print(RESET+SHOW+"  NATIONVK CYBER LAB — SESSION CLOSED")
