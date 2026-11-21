@@ -61,6 +61,38 @@ def pulse_frame(w,h,t):
         print("  "+"".join(line))
     print(color("  CORE STABILITY: NOMINAL",46))
 
+def heart_frame(w,h,t):
+    """Blue ANSI particle heart with pulse, orbit sparks and electric edges."""
+    art_h=max(9,min(h-9,25)); art_w=min(w-8,76)
+    scale=min(art_w/38,art_h/19)
+    pulse=1.0+0.055*math.sin(t*4.5)+0.025*math.sin(t*9)
+    cx=(art_w-1)/2; cy=(art_h-1)/2
+    points=[]
+    for yy in range(art_h):
+        row=[]
+        for xx in range(art_w):
+            x=(xx-cx)/(scale*pulse*1.0)
+            y=-(yy-cy)/(scale*pulse*.92)
+            v=(x*x+y*y-1)**3-x*x*y*y*y
+            row.append(v<=0)
+        points.append(row)
+    print(color("  ♥  BLUE CYBER HEART // PARTICLE CORE  ♥",51,True))
+    for yy,row in enumerate(points):
+        line=[]
+        for xx,inside in enumerate(row):
+            if inside:
+                edge=not all(0<=yy+dy<art_h and 0<=xx+dx<art_w and points[yy+dy][xx+dx] for dx,dy in [(1,0),(-1,0),(0,1),(0,-1)])
+                glyph=random.choice(["●","·","✦"]) if random.random()<.13 else ("◆" if edge else "•")
+                line.append(color(glyph,51 if edge else random.choice([39,45,51,123]),True))
+            else:
+                line.append(" ")
+        # Sparse orbital/electric particles outside the heart.
+        if random.random()<.16 and line:
+            k=random.randrange(len(line)); line[k]=color("✧",51)
+        print("  "+"".join(line))
+    print(color("  ⚡ HEARTBEAT: "+str(int(72+12*math.sin(t*4)))+" BPM  //  CORE: ONLINE",51))
+    print(color("  TOUCH EFFECT: PARTICLE BURST SIMULATED IN TERMINAL",39,False))
+
 def animate(kind):
     global running
     w,h=size(); os.system("clear")
@@ -95,7 +127,7 @@ def menu():
         except (EOFError,KeyboardInterrupt): break
         if choice=="0": break
         selected=next((k for n,_,k in options if n==choice),None)
-        if choice=="5": selected=random.choice(["matrix","scanner","glitch","pulse"])
+        if choice=="5": selected=random.choice(["matrix","scanner","glitch","pulse","heart"])\n        if choice=="6": selected="heart"
         if selected: animate(selected)
         else: print(color("  Unknown option.",201)); time.sleep(.7)
     print(RESET+SHOW+"  NATIONVK CYBER LAB — SESSION CLOSED")
